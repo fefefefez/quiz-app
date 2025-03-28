@@ -1,0 +1,148 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+body {
+  background-image: url('../src/Assets/noa.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Quiz styles */
+.quiz-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: rgba(250, 235, 215, 0.85);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.quiz-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(139, 69, 19, 0.2);
+  border-left: 4px solid #e67e22;
+}
+
+.quiz-card h3 {
+  margin-top: 0;
+  color: #d35400;
+  font-weight: bold;
+}
+
+.choices {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.choice {
+  padding: 12px 15px;
+  margin: 8px 0;
+  background-color: rgba(233, 150, 122, 0.8);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #181818;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.choice:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.choice.correct {
+  background-color: #27ae60;
+  color: white;
+}
+
+.choice.wrong {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.results-container {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  margin: 20px auto;
+  max-width: 600px;
+  border-top: 5px solid #e67e22;
+}
+
+.results-container h1 {
+  color: #d35400;
+  margin-top: 0;
+}
+
+.results-container button {
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.results-container button:hover {
+  background-color: #d35400;
+}
+
+/* Fix for the choice-flag images */
+.choice-flag {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Loading message styles */
+.loading-message {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  margin: 20px auto;
+  max-width: 600px;
+  color: #d35400;
+  font-size: 1.2em;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.choice.correct {
+  animation: pulse 0.4s ease-in-out;
+}
+
+/* shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+.choice.wrong {
+  animation: shake 0.4s ease-in-out;
+}
