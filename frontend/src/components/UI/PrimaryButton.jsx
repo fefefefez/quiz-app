@@ -1,11 +1,12 @@
-// PrimaryButton component 
+// PrimaryButton component
+import "../../styles/ui-kit.css"; // Importing the CSS file for styling
 
 function PrimaryButton({ children, onClick, type = 'button'}) {
     return(
         <button
             type={type}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded transition duration-200 shadow-md"
             onClick={onClick}
+            className="ui-button"
             >
             {children}
         </button>

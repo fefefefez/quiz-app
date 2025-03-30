@@ -1,5 +1,6 @@
 // header component
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
 function Header() {
@@ -11,13 +12,15 @@ function Header() {
                     alignItems: "center",
                     justifyContent: "flex-start",
                     padding: "1rem",
-                    backgroundColor: "rgba(255, 255, 255, 0.8)",
-                    borderBottom: "2px solid #e67e22",
+                    backgroundColor: "transparent",
                     marginBottom: "1rem",
+                    width: "100%",
                 }}
         >
-            <Logo size={60} />
-            <h1 style={{ marginLeft: "1rem", fontSize: "2rem", color: "#d35400" }}>
+            <Link to="/" style={{ display: "flex", alignItems: "center" }}>
+                <Logo size={60} />
+            </Link>
+            <h1 style={{ marginLeft: "1rem", fontSize: "2rem", color: "var(--primary-hover)" }}>
                 Quizz de Geographie
             </h1>
         </header>
