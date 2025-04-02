@@ -89,7 +89,6 @@ npm run dev
 ## 🤝 Contribution
 
 Tu veux contribuer ? Fork, crée une branche, propose un commit, et envoie une Pull Request 🙌  
-📧 Contact : [TonEmailIci@exemple.com]
 
 ---
 
