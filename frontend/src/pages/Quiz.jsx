@@ -17,7 +17,29 @@ function Quiz() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [quizFinished, setQuizFinished] = useState(false);
-
+  // Dans votre composant Quiz
+  const [askedQuestionIds, setAskedQuestionIds] = useState([]);
+  
+  // Lors du chargement des questions
+  const fetchQuestion = async () => {
+    try {
+      // Envoyer les IDs des questions déjà posées
+      const response = await getQuestions(category, askedQuestionIds);
+      
+      // Ajouter l'ID de la nouvelle question à la liste
+      if (response.questionId) {
+        setAskedQuestionIds(prev => [...prev, response.questionId]);
+      }
+      
+      // Reste de votre code...
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  // Utilisation de useEffect pour charger les questions
+  useEffect(() => {
+    fetchQuestion();
+  }, [category, askedQuestionIds]);
 
   useEffect(() => {
     if (!category) {

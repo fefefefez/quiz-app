@@ -18,7 +18,7 @@ const cleanCurrencyName = (currency, countryName) => {
   return currency.replace(regex, "").trim();
 };
 
-// 🟢 Route pour générer une question avec cache Redis
+// 🟢 Route pour générer une question
 router.get("/generate", async (req, res) => {
   try {
     const category = req.query.category || "pays-capital";
@@ -34,34 +34,57 @@ router.get("/generate", async (req, res) => {
     // 🟢 Génération de la question en fonction de la catégorie
     switch (category) {
       case "pays-capital":
-        wrongAnswers = await Country.find({
-          region: correct.region,
-          _id: { $ne: correct._id },
-        }).limit(3);
+        // Récupérer plus de pays que nécessaire pour éviter les doublons
+        wrongAnswers = await Country.aggregate([
+          { $match: { _id: { $ne: correct._id } } },
+          { $sample: { size: 10 } },
+        ]);
+        
+        // Filtrer pour s'assurer que les capitales sont différentes
+        wrongAnswers = wrongAnswers
+          .filter(c => c.capital !== correct.capital)
+          .slice(0, 3);
+        
         question = {
           question: `Quelle est la capitale de ${correct.name} ?`,
           choices: [correct.capital, ...wrongAnswers.map((c) => c.capital)].sort(() => Math.random() - 0.5),
           correctAnswer: correct.capital,
+          // Ajouter un identifiant unique pour éviter les doublons
+          questionId: `capital-${correct._id}`,
         };
         break;
 
+      // Appliquer la même logique aux autres cas
       case "capital-pays":
-        wrongAnswers = await Country.find({
-          region: correct.region,
-          _id: { $ne: correct._id },
-        }).limit(3);
+        wrongAnswers = await Country.aggregate([
+          { $match: { _id: { $ne: correct._id } } },
+          { $sample: { size: 10 } },
+        ]);
+        
+        // Filtrer pour s'assurer que les noms sont différents
+        wrongAnswers = wrongAnswers
+          .filter(c => c.name !== correct.name)
+          .slice(0, 3);
+        
         question = {
           question: `Quel pays a pour capitale ${correct.capital} ?`,
           choices: [correct.name, ...wrongAnswers.map((c) => c.name)].sort(() => Math.random() - 0.5),
           correctAnswer: correct.name,
+          questionId: `pays-${correct._id}`,
         };
         break;
 
       case "pays-drapeau":
-        wrongAnswers = await Country.find({
-          subregion: correct.subregion,
-          _id: { $ne: correct._id },
-        }).limit(3);
+        wrongAnswers = await Country.aggregate([
+          { $match: { _id: {$ne: correct._id } } },
+          { $sample: { size: 10 } },
+        ]);
+      
+        // Filtrer pour s'assurer que les drapeaux sont différents
+        wrongAnswers = wrongAnswers
+         .filter(c => c.flag!== correct.flag)
+         .slice(0, 3);
+
         question = {
           question: `Quel est le drapeau de ${correct.name} ?`,
           choices: [correct.flag, ...wrongAnswers.map((c) => c.flag)].sort(() => Math.random() - 0.5),
@@ -70,10 +93,16 @@ router.get("/generate", async (req, res) => {
         break;
 
       case "drapeau-pays":
-        wrongAnswers = await Country.find({
-          subregion: correct.subregion,
-          _id: { $ne: correct._id },
-        }).limit(3);
+        wrongAnswers = await Country.aggregate([
+          { $match: { _id: {$ne: correct._id } } },
+          { $sample: { size: 10 } },
+        ]);
+
+        // Filtrer pour s'assurer que les noms sont différents
+        wrongAnswers = wrongAnswers
+        .filter(c => c.name!== correct.name)
+        .slice(0, 3);
+
         question = {
           question: `À quel pays appartient ce drapeau ?`,
           flag: correct.flag,
@@ -161,6 +190,36 @@ router.get("/generate", async (req, res) => {
         return res.status(400).json({ message: "Catégorie invalide." });
     }
 
+
+    // Vérifier que les choix sont uniques
+    const uniqueChoices = [...new Set(question.choices)];
+    
+    // Si des doublons ont été supprimés, compléter avec d'autres options
+    if (uniqueChoices.length < 4) {
+      // Récupérer des pays supplémentaires
+      const additionalCountries = await Country.aggregate([
+        { $match: { _id: { $ne: correct._id } } },
+        { $sample: { size: 10 } },
+      ]);
+      
+      // Ajouter des choix jusqu'à avoir 4 options uniques
+      for (const country of additionalCountries) {
+        let newOption;
+        
+        if (category === "pays-capital") newOption = country.capital;
+        else if (category === "capital-pays") newOption = country.name;
+        // ... autres cas selon la catégorie
+        
+        if (newOption && !uniqueChoices.includes(newOption)) {
+          uniqueChoices.push(newOption);
+        }
+        
+        if (uniqueChoices.length === 4) break;
+      }
+      
+      // Mettre à jour les choix avec les options uniques
+      question.choices = uniqueChoices.sort(() => Math.random() - 0.5);
+    }
 
     res.json(question);
   } catch (error) {
