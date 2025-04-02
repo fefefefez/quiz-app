@@ -89,6 +89,7 @@ router.get("/generate", async (req, res) => {
           question: `Quel est le drapeau de ${correct.name} ?`,
           choices: [correct.flag, ...wrongAnswers.map((c) => c.flag)].sort(() => Math.random() - 0.5),
           correctAnswer: correct.flag,
+          questionId: `drapeau-${correct._id}`, // Ajout de l'identifiant unique
         };
         break;
 
@@ -108,6 +109,7 @@ router.get("/generate", async (req, res) => {
           flag: correct.flag,
           choices: [correct.name, ...wrongAnswers.map((c) => c.name)].sort(() => Math.random() - 0.5),
           correctAnswer: correct.name,
+          questionId: `drapeau-pays-${correct._id}`, // Ajout de l'identifiant unique
         };
         break;
 
@@ -208,7 +210,10 @@ router.get("/generate", async (req, res) => {
         
         if (category === "pays-capital") newOption = country.capital;
         else if (category === "capital-pays") newOption = country.name;
-        // ... autres cas selon la catégorie
+        else if (category === "pays-drapeau") newOption = country.flag;
+        else if (category === "drapeau-pays") newOption = country.name;
+        else if (category === "pays-monnaies") newOption = cleanCurrencyName(country.currency, country.name);
+        else if (category === "monnaies-pays") newOption = country.name;
         
         if (newOption && !uniqueChoices.includes(newOption)) {
           uniqueChoices.push(newOption);

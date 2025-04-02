@@ -2,10 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import correctSoundFile from "../Assets/sounds/correct.wav";
 import wrongSoundFile from "../Assets/sounds/wrong.wav";
 
-function QuizCard({ question, choices = [], correctAnswer, flag, onNext }) {
-  console.log("Props reçues par QuizCard :", { question, choices, correctAnswer, flag, onNext });
+function QuizCard({ question, choices = [], correctAnswer, flag, onNext, questionNumber }) {
+  console.log("Props reçues par QuizCard :", { question, choices, correctAnswer, flag, onNext, questionNumber });
 
-  
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [disableButtons, setDisableButtons] = useState(false);
   const correctSound = useRef(new Audio(correctSoundFile));
@@ -17,35 +16,34 @@ function QuizCard({ question, choices = [], correctAnswer, flag, onNext }) {
     wrongSound.current.volume = 0.2;
   }, []);
 
-  //reinitialiser les boutons
+  //reinitialiser les boutons - ajout de questionNumber comme dépendance
   useEffect(() => {
     setSelectedAnswer(null);
     setDisableButtons(false);
-  }, [question]);
+  }, [question, questionNumber]);
   
   const handleAnswer = (answer) => {
-
     if (disableButtons) return; // empêcher de cliquer plusieurs fois
+    
     setDisableButtons(true);
     setSelectedAnswer(answer);
 
     const isCorrect = answer === correctAnswer;
 
-      if (isCorrect) {
+    if (isCorrect) {
+      correctSound.current.play();
+    } else {
+      wrongSound.current.play();
+    }
 
-        correctSound.current.play();
-      } else {
-        wrongSound.current.play();
-      }
-
-    setTimeout(() => onNext(isCorrect), 800);
+    // Délai légèrement plus long pour voir la réponse
+    setTimeout(() => onNext(isCorrect), 1000);
   };
 
   return (
     <div className="quiz-card">
       <h3>{question}</h3>
       {flag && <img src={flag} alt="Drapeau" style={{ width: "150px", margin: "10px 0" }} />}
-
 
       <ul className="choices">
         {choices.map((choice, i) => (
@@ -55,12 +53,17 @@ function QuizCard({ question, choices = [], correctAnswer, flag, onNext }) {
             className={`choice ${selectedAnswer
               ? choice === correctAnswer
                 ? "correct"
-                : "wrong"
+                : choice === selectedAnswer 
+                  ? "wrong" 
+                  : ""
               : ""
             }`}
-            style={{ PointerEvents: disableButtons ? "none" : "auto" }}//desactiver les boutons
+            style={{ 
+              pointerEvents: disableButtons ? "none" : "auto", // Correction de PointerEvents à pointerEvents
+              cursor: disableButtons ? "default" : "pointer"
+            }}
           >
-            {choice.startsWith("http") ? (
+            {choice && choice.startsWith && choice.startsWith("http") ? (
               <img src={choice} alt="Drapeau" className="choice-flag" style={{ width: "100px", height: "auto", borderRadius: "5px" }} />
             ) : (
               choice

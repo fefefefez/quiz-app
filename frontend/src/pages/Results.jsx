@@ -10,6 +10,9 @@ function Results()
     const query = new URLSearchParams(location.search);
     const score = query.get("score");
     const category = query.get("category");
+    const handleReplay = () => {
+        navigate(`/quiz?category=${category}&replay=true`);
+    };
 
     return(
         <div className="results-container">
@@ -18,7 +21,7 @@ function Results()
         <p>📚 Catégorie jouée : <strong>{category}</strong></p>
   
         <button onClick={() => navigate("/")}>🏠 Retour à l'accueil</button>
-        <button onClick={() => navigate(`/quiz?category=${category}`)}>🔄 Rejouer</button>
+        <button onClick={handleReplay}>🔄 Rejouer</button>
       </div>
     );
 }
