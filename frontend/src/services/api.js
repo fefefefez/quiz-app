@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const getQuestions = async (category, askedIds = []) => {
-    const API_URL = 'http://localhost:5002/api/questions';
+    const API_URL = import.meta.env.VITE_API_URL || '/api/questions';
     try {
         const queryParams = new URLSearchParams({
             category,
